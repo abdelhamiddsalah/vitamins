@@ -14,7 +14,7 @@ const {
 
 
 router.put('/:id', verifyTokenAndAuthorization, updateValidation, updateUserRoute);
-router.delete('/:id', verifyToken, deleteUserRoute);
+router.delete('/:id', verifyTokenAndAdmin, deleteUserRoute);
 router.get('/', verifyTokenAndAdmin, getAllUsersRoute);
 router.get('/:id', verifyTokenAndAdmin, getUserByIdRoute);
 
