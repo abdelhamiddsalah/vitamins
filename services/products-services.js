@@ -44,6 +44,16 @@ const getallproductsRoute = asyncHandler(async (req, res, next) => {
 });
 
 
+const deleteProductRoute = asyncHandler(async (req, res, next) => {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        return next(new Apierror("Product not found", 404));
+    }
+    await Product.findByIdAndDelete(req.params.id);
+    res.status(200).json({message: "Product deleted successfully"});
+});
+
+
 
 
 
