@@ -1,8 +1,8 @@
-const express = require('express');
 const {validationResult} = require('express-validator');    
 const Product = require('../models/products-model');
 const asyncHandler = require('express-async-handler');
 const Apierror = require('../utiels/api-error');
+const { image } = require('../config/cloudinaryConfig');
 
 
 
@@ -14,11 +14,33 @@ const createProductRoute = asyncHandler(async (req, res, next) => {
     if (!errors.isEmpty()) {
         return next(new Apierror(errors.array()[0].msg, 400));
     }
-    const product = await Product.create(req.body);
+    
+    const product = await Product.create({
+        ...req.body,
+        image: req.file.path
+    });
     if (!product) {
         return next(new Apierror("Product not created", 400));
     }
     res.status(201).json(product);
+});
+
+
+const getProductRoute = asyncHandler(async (req, res, next) => {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        return next(new Apierror("Product not found", 404));
+    }
+    res.status(200).json(product);
+});
+
+
+const getallproductsRoute = asyncHandler(async (req, res, next) => {
+    const products = await Product.find();
+    if (!products) {
+        return next(new Apierror("Products not found", 404));
+    }
+    res.status(200).json(products);
 });
 
 
@@ -29,5 +51,7 @@ const createProductRoute = asyncHandler(async (req, res, next) => {
 module.exports = {
     
     createProductRoute,
+    getProductRoute,
+    getallproductsRoute
     
 };

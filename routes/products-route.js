@@ -5,11 +5,15 @@ const { productValidation } = require('../middleswares/products-validation');
 const {
 
     createProductRoute,
- 
+    getProductRoute,
+    getallproductsRoute
 } = require('../services/products-services');
+const upload = require('../config/multer');
 
 
-router.post('/', productValidation, createProductRoute);
+router.post('/',upload.single('image'), productValidation, createProductRoute);
+router.get('/:id', getProductRoute);
+router.get('/', getallproductsRoute);
 
 
 

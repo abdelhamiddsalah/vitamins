@@ -6,8 +6,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Function to generate JWT token
-const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+const generateToken = (userId, role) => {
+    return jwt.sign({ id: userId, role}, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
 /**
@@ -27,7 +27,11 @@ const registerUserRoute = asyncHandler(async (req, res, next) => {
     req.body.password = await bcrypt.hash(req.body.password, salt);
 
     // Create user
-    const user = await User.create(req.body);
+    const user = await User.create({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+    });
     if (!user) {
         return next(new Apierror('Failed to create user', 400));
     }
@@ -35,7 +39,7 @@ const registerUserRoute = asyncHandler(async (req, res, next) => {
 
 
     // Generate token and send response
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, user.role);
     const { password, ...userDetails } = user._doc;
     res.status(201).json({ ...userDetails, token});
 });
@@ -65,7 +69,7 @@ const loginUserRoute = asyncHandler(async (req, res, next) => {
     }
 
     // Generate token and send response
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, user.role);
     const { password, ...userDetails } = user._doc;
     res.status(200).json({ ...userDetails, token });
 });

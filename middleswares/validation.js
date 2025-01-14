@@ -6,12 +6,14 @@ const registerValidation = [
     body('email').isEmail().withMessage('Invalid email format'),
     body('password').notEmpty().withMessage('Password is required')
         .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('role').isIn(['user']).withMessage('Invalid role'),
 ];
 
 // التحقق من البيانات عند تسجيل الدخول
 const loginValidation = [
     body('email').isEmail().withMessage('Invalid email format'),
     body('password').notEmpty().withMessage('Password is required'),
+
 ];
 
 // التحقق من البيانات عند تحديث المستخدم
