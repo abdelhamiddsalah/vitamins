@@ -7,7 +7,8 @@ const {
     createProductRoute,
     getProductRoute,
     getallproductsRoute,
-    deleteProductRoute
+    deleteProductRoute,
+    updateProductRoute
 } = require('../services/products-services');
 const upload = require('../config/multer');
 
@@ -16,6 +17,7 @@ router.post('/',upload.single('image'), productValidation, createProductRoute);
 router.get('/:id', getProductRoute);
 router.get('/', getallproductsRoute);
 router.delete('/:id', deleteProductRoute);
+router.put('/:id', updateProductRoute);
 
 
 
