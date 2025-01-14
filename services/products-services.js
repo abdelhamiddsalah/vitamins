@@ -62,6 +62,7 @@ module.exports = {
     
     createProductRoute,
     getProductRoute,
-    getallproductsRoute
+    getallproductsRoute,
+    deleteProductRoute
     
 };
