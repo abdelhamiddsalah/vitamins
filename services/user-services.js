@@ -53,17 +53,22 @@ const updateUserRoute = asyncHandler(async (req, res, next) => {
  * @access Private
  */
 
-    const deleteUserRoute = asyncHandler(async (req, res, next) => {
-        if (req.user.id !== req.params.id ) {
-            return next(new Apierror('You are not authorized to delete this user', 403));
-        } 
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return next(new Apierror("User not found", 404));
-        }
-        await User.findByIdAndDelete(req.params.id);
-        res.status(200).json({message: "User deleted successfully"});
-    });
+const deleteUserRoute = asyncHandler(async (req, res, next) => {
+    // تأكد من أن المستخدم لديه دور "Admin"
+    if (req.user.role !== 'admin') {
+        return next(new Apierror('You are not authorized to delete this user', 403));
+    }
+
+    // تحقق إذا كان المستخدم موجودًا
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        return next(new Apierror("User not found", 404));
+    }
+
+    // حذف المستخدم
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "User deleted successfully" });
+});
 
      /**
       * get user by id
