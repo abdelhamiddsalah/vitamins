@@ -61,9 +61,29 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     });
 });
 
+
+
 const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
+    const { token } = req.params;
+
+    let decoded;
+    try {
+        // فك تشفير رمز JWT والتحقق من صلاحيته
+        decoded = jwt.verify(token, process.env.JWT_SECRET); // استخدم JWT_SECRET فقط في التحقق
+    } catch (err) {
+        return next(new Apierror('Invalid or expired token', 400));
+    }
+
+    // العثور على المستخدم باستخدام id من التوكن
+    const user = await User.findById(decoded.id);
+    if (!user) {
+        return next(new Apierror('User not found', 404));
+    }
+
+    // إرسال الصفحة مع البريد الإلكتروني للمستخدم
     res.render('reset-password', { email: user.email });
-})
+});
+
 
 /**
  * Reset Password
