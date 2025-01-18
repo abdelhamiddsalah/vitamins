@@ -4,16 +4,19 @@ const { registerValidation, loginValidation } = require('../middleswares/validat
 
 const {
     registerUserRoute,
-    loginUserRoute
+    loginUserRoute,
+
 } = require('../services/auth-services');  
 
 
-const {forgetPasswordRoute, resetPasswordRoute} = require('../services/passwords-services');
+const {forgetPasswordRoute, resetPasswordRoute,getResetPasswordRoute} = require('../services/passwords-services');
 
 router.post('/register', registerValidation, registerUserRoute);
 router.post('/login', loginValidation, loginUserRoute);
 router.post('/forgot-password', forgetPasswordRoute);
-router.get('/reset-password/:token', resetPasswordRoute);
+router.post('/reset-password/:token', resetPasswordRoute);
+router.get('/reset-password/:token', getResetPasswordRoute);
+
 
 
 module.exports = router;
