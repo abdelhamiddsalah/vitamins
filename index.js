@@ -13,9 +13,7 @@ connectDB();
 const app = express();
 
 
-app.set('views', path.join(__dirname, 'views'));
-
-// تحديد الـ view engine (في هذه الحالة ejs)
+app.set('views', './views');
 app.set('view engine', 'ejs');
 
 // تحديد مسار القوالب (إذا كانت الملفات داخل مجلد محدد مثل "views")
