@@ -18,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 // Routes
 const productsRoute = require('./routes/products-route');
