@@ -1,8 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user-model'); // تأكد من أن المسار صحيح
-const Apierror = require('../utiels/api-error');
+const User = require('../models/user-model'); // تأكد من صحة المسار
+const ApiError = require('../utils/api-error');
 const nodemailer = require('nodemailer');
 
 /**
@@ -16,12 +16,11 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     // التحقق من صحة البريد الإلكتروني
     const user = await User.findOne({ email });
     if (!user) {
-        return next(new Apierror('Email not found', 404));
+        return next(new ApiError('Email not found', 404));
     }
 
     // توليد رمز JWT مؤقت
-    const JWTkey = process.env.JWT_SECRET + user.password;
-    const token = jwt.sign({ email: user.email, id: user._id }, JWTkey, { expiresIn: '10m' });
+    const token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '10m' });
 
     // إنشاء رابط إعادة التعيين
     const link = `${process.env.LINK_VERCEL || 'https://vitaminss.vercel.app'}/api/auth/reset-password/${token}`;
@@ -34,7 +33,7 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
             pass: process.env.USER_PASS,
         },
         tls: {
-            rejectUnauthorized: false, // تخطي التحقق من الشهادة
+            rejectUnauthorized: false,
         },
     });
 
@@ -46,42 +45,45 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent: ' + info.response);
+        await transporter.sendMail(mailOptions);
     } catch (err) {
-        console.error('Error sending email:', err);
-        return next(new Apierror('Failed to send reset password email', 500));
+        return next(new ApiError('Failed to send reset password email', 500));
     }
 
-    // إرسال الرابط مباشرة في الرد
     res.status(200).json({
         status: 'success',
-        message: 'Password reset link generated successfully',
-        resetPasswordLink: link,
+        message: 'Password reset link sent successfully to your email.',
     });
 });
 
-
-
+/**
+ * Get Reset Password Page
+ * @route GET /api/auth/reset-password/:token
+ * @access Public
+ */
 const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
-   const user = await User.findById(req.params.userId);
-   if (!user) {
-       return next(new Apierror('User not found', 404));
-   }
-   const   JWTkey = process.env.JWT_SECRET + user.password;
-   try {
-       // فك تشفير رمز JWT والتحقق من صلاحيته
-       jwt.verify(req.params.token, JWTkey);
-       res.render('reset-password', { email: user.email });
-   } catch (err) {
-       return next(new Apierror('Invalid or expired token', 400));
-   }
-});
+    const { token } = req.params;
 
+    let decoded;
+    try {
+        // فك تشفير رمز JWT والتحقق من صلاحيته
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        return next(new ApiError('Invalid or expired token', 400));
+    }
+
+    // العثور على المستخدم باستخدام id من التوكن
+    const user = await User.findById(decoded.id);
+    if (!user) {
+        return next(new ApiError('User not found', 404));
+    }
+
+    res.render('reset-password', { email: user.email });
+});
 
 /**
  * Reset Password
- * @route PATCH /api/auth/reset-password/:token
+ * @route POST /api/auth/reset-password/:token
  * @access Public
  */
 const resetPasswordRoute = asyncHandler(async (req, res, next) => {
@@ -91,24 +93,22 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     let decoded;
     try {
         // فك تشفير رمز JWT والتحقق من صلاحيته
-        decoded = jwt.verify(token, process.env.JWT_SECRET); // استخدم JWT_SECRET فقط في التحقق
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-        return next(new Apierror('Invalid or expired token', 400));
+        return next(new ApiError('Invalid or expired token', 400));
     }
 
     // العثور على المستخدم باستخدام id من التوكن
     const user = await User.findById(decoded.id);
     if (!user) {
-        return next(new Apierror('User not found', 404));
+        return next(new ApiError('User not found', 404));
     }
 
     // تحديث كلمة المرور
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
-
     await user.save();
 
-    // إرسال الرد النهائي
     res.status(200).json({
         status: 'success',
         message: 'Password reset successfully',
@@ -117,6 +117,6 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
 
 module.exports = {
     forgetPasswordRoute,
+    getResetPasswordRoute,
     resetPasswordRoute,
-    getResetPasswordRoute
 };
