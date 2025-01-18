@@ -23,7 +23,6 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-app.set('view engine', 'ejs');
 // Routes
 const productsRoute = require('./routes/products-route');
 const userRoute = require('./routes/user-route');
