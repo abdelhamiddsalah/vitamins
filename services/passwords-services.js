@@ -63,7 +63,7 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
 
 /**
  * Reset Password
- * @route PATCH /api/auth/reset-password/:token
+ * @route Get /api/auth/reset-password/:token
  * @access Public
  */
 const resetPasswordRoute = asyncHandler(async (req, res, next) => {
@@ -74,6 +74,7 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     try {
         // فك تشفير رمز JWT والتحقق من صلاحيته
         decoded = jwt.verify(token, process.env.JWT_SECRET); // استخدم JWT_SECRET فقط في التحقق
+        res.render('reset-password', { email: user.email });
     } catch (err) {
         return next(new Apierror('Invalid or expired token', 400));
     }

@@ -13,7 +13,7 @@ const {forgetPasswordRoute, resetPasswordRoute} = require('../services/passwords
 router.post('/register', registerValidation, registerUserRoute);
 router.post('/login', loginValidation, loginUserRoute);
 router.post('/forgot-password', forgetPasswordRoute);
-router.post('/reset-password/:token', resetPasswordRoute);
+router.get('/reset-password/:token', resetPasswordRoute);
 
 
 module.exports = router;
