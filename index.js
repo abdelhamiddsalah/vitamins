@@ -12,16 +12,13 @@ connectDB();
 // Middleware
 const app = express();
 
-app.set('view engine', 'ejs');
 
-// تحديد مسار القوالب (إذا كانت الملفات داخل مجلد محدد مثل "views")
-app.set('views', './views');
 
 
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-
+app.set('view engine', 'ejs');
 // Routes
 const productsRoute = require('./routes/products-route');
 const userRoute = require('./routes/user-route');
