@@ -40,8 +40,8 @@ const registerUserRoute = asyncHandler(async (req, res, next) => {
 
     // Generate token and send response
     const token = generateToken(user._id, user.role);
-    const { password, ...userDetails } = user._doc;
-    res.status(201).json({ ...userDetails, token,password});
+  //  const { password, ...userDetails } = user._doc;
+    res.status(201).json({ id: user._id, name: user.name, email: user.email, token, role: user.role});
 });
 
 /**
