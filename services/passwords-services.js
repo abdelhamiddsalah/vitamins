@@ -26,7 +26,7 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     const token = jwt.sign({ email: user.email, id: user._id }, JWTkey, { expiresIn: '10m' });
 
     // إنشاء رابط إعادة التعيين
-    const link = `http://localhost:3000/api/auth/reset-password/${token}`;
+    const link = `${process.env.LINK_VERCEL}/api/auth/reset-password/${token}`;
 
     // ارسال الرابط عبر البريد الإلكتروني
     const transporter = nodemailer.createTransport({
