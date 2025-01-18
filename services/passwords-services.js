@@ -64,7 +64,7 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
 
 
 const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
-   const user = await User.findById(req.params.id);
+   const user = await User.findById(req.params.userId);
    if (!user) {
        return next(new Apierror('User not found', 404));
    }
