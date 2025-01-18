@@ -12,10 +12,12 @@ connectDB();
 // Middleware
 const app = express();
 
+
+app.set('views', './views');
 app.set('view engine', 'ejs');
 
 // تحديد مسار القوالب (إذا كانت الملفات داخل مجلد محدد مثل "views")
-app.set('views', './views');
+
 
 
 app.use(express.json());
