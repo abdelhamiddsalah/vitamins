@@ -5,8 +5,6 @@ const User = require('../models/user-model'); // تأكد من أن المسار
 const Apierror = require('../utiels/api-error');
 const nodemailer = require('nodemailer');
 
-
-
 /**
  * Forget Password
  * @route POST /api/auth/forgot-password
@@ -39,19 +37,21 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
             rejectUnauthorized: false, // تخطي التحقق من الشهادة
         },
     });
+
     const mailOptions = {
         from: process.env.USER_EMAIL,
         to: user.email,
         subject: 'Reset Password',
         text: `Click the link below to reset your password: ${link}`,
     };
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+    } catch (err) {
+        console.error('Error sending email:', err);
+        return next(new Apierror('Failed to send reset password email', 500));
+    }
 
     // إرسال الرابط مباشرة في الرد
     res.status(200).json({
@@ -70,17 +70,15 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     const { token } = req.params;
     const { password } = req.body;
 
-    // فك تشفير رمز JWT والتحقق من صلاحيته
     let decoded;
     try {
-        const user = await User.findById(decoded.id);
-        const JWTkey = process.env.JWT_SECRET + user.password;
-        decoded = jwt.verify(token, JWTkey);
+        // فك تشفير رمز JWT والتحقق من صلاحيته
+        decoded = jwt.verify(token, process.env.JWT_SECRET); // استخدم JWT_SECRET فقط في التحقق
     } catch (err) {
         return next(new Apierror('Invalid or expired token', 400));
     }
 
-    // العثور على المستخدم
+    // العثور على المستخدم باستخدام id من التوكن
     const user = await User.findById(decoded.id);
     if (!user) {
         return next(new Apierror('User not found', 404));
