@@ -4,6 +4,8 @@ const { globalErrorHandler , routernotfound} = require('./middleswares/middlewar
 const connectDB = require('./config/database');
 const helmet = require('helmet');
 const cors = require('cors');
+const path = require('path');  // استيراد مكتبة path
+const ejs = require('ejs');
 
 dotenv.config();
 // Connect to MongoDB
@@ -11,6 +13,11 @@ connectDB();
 
 // Middleware
 const app = express();
+
+app.set('views', path.join(__dirname, 'views'));  // تعديل المسار إلى مجلد views
+
+// تحديد نوع القوالب
+app.set('view engine', 'ejs');
 
 
 
