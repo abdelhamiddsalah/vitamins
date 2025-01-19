@@ -24,7 +24,7 @@ app.set('view engine', 'ejs');
 
 // تحديد مسار القوالب (إذا كانت الملفات داخل مجلد محدد مثل "views")
 
-
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 app.use(helmet());

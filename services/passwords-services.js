@@ -2,8 +2,8 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user-model'); // تأكد من أن المسار صحيح
-const Apierror = require('../utiels/api-error');
 const nodemailer = require('nodemailer');
+const Apierror = require('../utiels/api-error');
 
 /**
  * Forget Password
@@ -16,7 +16,7 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     // التحقق من صحة البريد الإلكتروني
     const user = await User.findOne({ email });
     if (!user) {
-        return next(new ApiError('Email not found', 404));
+        return next(new Apierror('Email not found', 404));
     }
 
     // توليد رمز JWT مؤقت
@@ -80,12 +80,17 @@ const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
 
 /**
  * Reset Password
- * @route PATCH /api/auth/reset-password/:token
+ * @route POST /api/auth/reset-password/:token
  * @access Public
  */
 const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     const { token } = req.params;
     const { password } = req.body;
+
+    // التحقق من صحة كلمة المرور
+    if (!password) {
+        return next(new Apierror('Password is required', 400));
+    }
 
     let decoded;
     try {
@@ -111,7 +116,6 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
         message: 'Password reset successfully',
     });
 });
-
 
 module.exports = {
     forgetPasswordRoute,
