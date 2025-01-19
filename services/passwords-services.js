@@ -74,8 +74,10 @@ const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
         return next(new Apierror('User not found', 404));
     }
 
+    // عرض صفحة reset-password مع تمرير التوكن
     res.render('reset-password', { token });
 });
+
 
 
 /**
