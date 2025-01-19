@@ -13,7 +13,7 @@ connectDB();
 const app = express();
 
 
-app.set('views', './views');
+app.set('views', 'D:/nodejsprojects/StoreApp/views');
 app.set('view engine', 'ejs');
 
 // تحديد مسار القوالب (إذا كانت الملفات داخل مجلد محدد مثل "views")
