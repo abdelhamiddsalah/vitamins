@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user-model'); // تأكد من أن المسار صحيح
+const User = require('../models/user-model');
 const nodemailer = require('nodemailer');
 const Apierror = require('../utiels/api-error');
 
@@ -56,19 +56,21 @@ const forgetPasswordRoute = asyncHandler(async (req, res, next) => {
     });
 });
 
-
+/**
+ * Get Reset Password Form
+ * @route GET /api/auth/reset-password/:token
+ * @access Public
+ */
 const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
     const { token } = req.params;
 
     let decoded;
     try {
-        // فك تشفير رمز JWT والتحقق من صلاحيته
         decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
         return next(new Apierror('Invalid or expired token', 400));
     }
 
-    // العثور على المستخدم باستخدام id من التوكن
     const user = await User.findById(decoded.id);
     if (!user) {
         return next(new Apierror('User not found', 404));
@@ -76,7 +78,6 @@ const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
 
     res.render('reset-password', { token });
 });
-
 
 /**
  * Reset Password
@@ -87,38 +88,44 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     const { token } = req.params;
     const { password } = req.body;
 
-    // التحقق من صحة كلمة المرور
     if (!password) {
         return next(new Apierror('Password is required', 400));
     }
 
     let decoded;
     try {
-        // فك تشفير رمز JWT والتحقق من صلاحيته
         decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
         return next(new Apierror('Invalid or expired token', 400));
     }
 
-    // العثور على المستخدم باستخدام id من التوكن
     const user = await User.findById(decoded.id);
     if (!user) {
         return next(new Apierror('User not found', 404));
     }
 
-    // تحديث كلمة المرور
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
 
     res.status(200).json({
         status: 'success',
-        message: 'Password reset successfully',
+        message: 'Password reset successfully. Visit /api/auth/success-reset-password for confirmation.',
     });
+});
+
+/**
+ * Success Reset Password
+ * @route GET /api/auth/success-reset-password
+ * @access Public
+ */
+const successResetPasswordRoute = asyncHandler(async (req, res, next) => {
+    res.render('success-reset-password', { message: 'Password has been successfully reset. You can now log in with your new password.' });
 });
 
 module.exports = {
     forgetPasswordRoute,
     resetPasswordRoute,
-    getResetPasswordRoute
+    getResetPasswordRoute,
+    successResetPasswordRoute,
 };
