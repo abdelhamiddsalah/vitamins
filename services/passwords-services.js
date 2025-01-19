@@ -108,10 +108,7 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     user.password = await bcrypt.hash(password, salt);
     await user.save();
 
-    res.status(200).json({
-        status: 'success',
-        message: 'Password reset successfully. Visit /api/auth/success-reset-password for confirmation.',
-    });
+    res.render('success-reset-password', { message: 'Password has been successfully reset. You can now log in with your new password.' });
 });
 
 /**
