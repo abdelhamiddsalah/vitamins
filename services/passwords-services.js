@@ -74,7 +74,7 @@ const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
         return next(new Apierror('User not found', 404));
     }
 
-    res.render('reset-password', { token });
+    res.render('reset-password', { email: user.email });
 });
 
 
