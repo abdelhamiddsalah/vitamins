@@ -75,8 +75,6 @@ const getResetPasswordRoute = asyncHandler(async (req, res, next) => {
     if (!user) {
         return next(new Apierror('User not found', 404));
     }
-
-    res.render('reset-password', { token });
 });
 
 /**
@@ -108,21 +106,14 @@ const resetPasswordRoute = asyncHandler(async (req, res, next) => {
     user.password = await bcrypt.hash(password, salt);
     await user.save();
 
-    res.render('success-reset-password', { message: 'Password has been successfully reset. You can now log in with your new password.' });
-});
-
-/**
- * Success Reset Password
- * @route GET /api/auth/success-reset-password
- * @access Public
- */
-const successResetPasswordRoute = asyncHandler(async (req, res, next) => {
-    res.render('success-reset-password', { message: 'Password has been successfully reset. You can now log in with your new password.' });
+    res.status(200).json({
+        status: 'success',
+        message: 'Password has been successfully reset. You can now log in with your new password.',
+    });
 });
 
 module.exports = {
     forgetPasswordRoute,
     resetPasswordRoute,
     getResetPasswordRoute,
-    successResetPasswordRoute,
 };
