@@ -5,7 +5,7 @@
         ],
         "target": {
             "namespace": "android_app",
-            "package_name": "com.example.vitamins",
+            "package_name": "com.example.vitamins.development",
             "sha256_cert_fingerprints": [
                 "0F:C9:DD:94:5A:11:64:68:18:66:BD:FD:77:72:70:BE:52:4F:1F:26:FD:F9:CD:62:D1:6B:92:A3:D2:1A:3E:76"
             ]
