@@ -14,11 +14,12 @@ connectDB();
 // Middleware
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));  // تعديل المسار إلى مجلد views
+//app.set('views', path.join(__dirname, 'views'));  // تعديل المسار إلى مجلد views
 
 // تحديد نوع القوالب
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
 
 
 
