@@ -22,14 +22,11 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     details: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Details',
+        type: String,
         required: true
     },
     isDeal: {
         type: Boolean,
-        ref: 'Deals',
-        required: true
     }
 });
 
