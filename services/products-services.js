@@ -36,7 +36,7 @@ const getProductRoute = asyncHandler(async (req, res, next) => {
 
 
 const getallproductsRoute = asyncHandler(async (req, res, next) => {
-    const products = await Product.find();
+    const products = await Product.find({isDeal: true});
     if (!products) {
         return next(new Apierror("Products not found", 404));
     }
