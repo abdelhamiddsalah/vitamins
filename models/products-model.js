@@ -20,6 +20,16 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true
+    },
+    details: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Details',
+        required: true
+    },
+    isDeal: {
+        type: Boolean,
+        ref: 'Deals',
+        required: true
     }
 });
 
